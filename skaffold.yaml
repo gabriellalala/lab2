@@ -1,0 +1,30 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  artifacts:
+  - image: changeme
+    context: .
+    docker: {}
+  tagPolicy:
+    envTemplate:
+      template: '{{.DOCKER_REGISTRY}}/gabriellalalalaa/petclinic-k8labs-user06:{{.VERSION}}'
+  local: {}
+deploy:
+  kubectl: {}
+profiles:
+- name: dev
+  build:
+    artifacts:
+    - docker: {}
+    tagPolicy:
+      envTemplate:
+        template: '{{.DOCKER_REGISTRY}}/gabriellalalalaa/petclinic-k8labs-user06:{{.DIGEST_HEX}}'
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: petclinic-k8labs-user06
+        chartPath: charts/petclinic-k8labs-user06
+        setValueTemplates:
+          image.repository: '{{.DOCKER_REGISTRY}}/gabriellalalalaa/petclinic-k8labs-user06'
+          image.tag: '{{.DIGEST_HEX}}'
